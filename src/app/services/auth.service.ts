@@ -20,7 +20,7 @@ export class AuthService {
 
   async signInWithGoogle() {
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(this.auth, provider);
+    return signInWithPopup(getAuth(), provider);
   }
 
   async getUserFromDb(userId: string){

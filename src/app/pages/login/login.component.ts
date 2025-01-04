@@ -19,11 +19,16 @@ export class LoginComponent {
   toastrService = inject(ToastrService);
 
   constructor(private router: Router, private authService: AuthService) {};
-
+  handleSignInWithEmail(){
+    console.log("Email test");
+    
+  }
   handleSignInWithGoogle(){
+    console.log("loging");
+
     this.authService.signInWithGoogle().then((result) =>{
       // const credential = GoogleAuthProvider.credentialFromResult(result);
-
+      console.log("loging");
       const user = result.user;
 
       this.authService.addUserData(user,null);

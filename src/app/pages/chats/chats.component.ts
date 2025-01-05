@@ -98,56 +98,46 @@ export class ChatsComponent implements OnInit {
     });
   }
 
-  addMessage() {
-    if (!this.messageControl.value.trim()) {
-      return;
-    }
-  
-    const message: Message = {
-      senderId: this.authService.getCurrentUser().uid ?? '',
-      messageText: this.messageControl.value,
-      timestamp: new Date(),
-      read: false,
-      messageType: 'text',
-      fullName: this.currentUser.fullName
-    };
-  
-    // Use ApiService to analyze the message text
-    this.apiService.analyzeText(message.messageText).subscribe(
-      (response) => {
-        console.log('Message analysis:', response);
-  
-        // Store the analysis response in Firestore
-        const trackData = {
-          analyzedText: response,
-          message: message.messageText,
-          timestamp: new Date(),
-          senderId: this.authService.getCurrentUser().uid,
-          senderName: this.currentUser.fullName
-        };
-  
-        this.firestore
-          .collection('track') // Firestore collection name
-          .add(trackData)
-          .then(() => {
-            console.log('Analysis data saved to Firestore.');
-          })
-          .catch((error) => {
-            console.error('Error saving analysis to Firestore:', error);
-          });
-  
-        // Proceed with sending the message
-        this.chatService.addMessage(this.chatRoomData.chatRoomId ?? '', message);
-        this.messageControl.reset();
-      },
-      (error) => {
-        console.error('Error analyzing message:', error);
-        // Optionally handle message sending even if analysis fails
-        this.chatService.addMessage(this.chatRoomData.chatRoomId ?? '', message);
-        this.messageControl.reset();
-      }
-    );
+addMessage() {
+  if (!this.messageControl.value.trim()) {
+    return;
   }
+
+  const message: Message = {
+    senderId: this.authService.getCurrentUser().uid ?? '',
+    messageText: this.messageControl.value,
+    timestamp: new Date(),
+    read: false,
+    messageType: 'text',
+    fullName: this.currentUser.fullName,
+  };
+
+  this.apiService.analyzeText(message.messageText).subscribe(
+    async (response) => {
+      // Prepare track data
+      const trackData = {
+        analyzedText: response,
+        message: message.messageText,
+        timestamp: new Date(),
+        senderId: this.authService.getCurrentUser().uid,
+        senderName: this.currentUser.fullName,
+      };
+
+      // Save to Firestore via ChatService
+      await this.chatService.saveMessageAnalysis(trackData);
+
+      // Add the message to the chat
+      this.chatService.addMessage(this.chatRoomData.chatRoomId ?? '', message);
+      this.messageControl.reset();
+    },
+    (error) => {
+      console.error('Error analyzing message:', error);
+      this.chatService.addMessage(this.chatRoomData.chatRoomId ?? '', message);
+      this.messageControl.reset();
+    }
+  );
+}
+
 
   getLastTextMessage(item: any, user: UserChatConfig) {
     let lastText = '';

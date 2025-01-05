@@ -11,7 +11,6 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ChatRoom, Message } from '../../interfaces/models/chat-room.interface';
 import { ApiService } from '../../services/api.service'; // Added ApiService import
 import { HttpClientModule } from '@angular/common/http'; 
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Component({
   selector: 'app-chats',
@@ -40,7 +39,6 @@ export class ChatsComponent implements OnInit {
     public authService: AuthService,
     private chatService: ChatService,
     private apiService: ApiService, // Injected ApiService
-    private firestore: AngularFirestore
   ) {}
 
   ngOnInit(): void {

@@ -130,4 +130,14 @@ export class ChatService {
       })
     })
   }
+  async saveMessageAnalysis(trackData: any): Promise<void> {
+  const trackCollection = collection(this.firestore, 'track');
+  try {
+    await addDoc(trackCollection, trackData);
+    console.log('Message analysis saved to Firestore successfully.');
+  } catch (error) {
+    console.error('Error saving analysis to Firestore:', error);
+  }
+}
+
 }
